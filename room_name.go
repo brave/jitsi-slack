@@ -119,6 +119,21 @@ var (
 
 // RandomName will generate a new video name randomly.
 func RandomName() string {
+/* !!! replace this with the algorithm used in together.brave.com
+
+   In JavaScript:
+
+	Crypto.randomBytes(32, (err, buffer) => {
+	      if (!err) {
+	        const name = buffer.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/\=/g, '')
+	      }
+	    });
+
+    In English:
+
+        Generate 256 bits of entropy, encode it as 43 characters of URL-safe base64.
+
+ */
 	var (
 		adj  = adjectives[rand.Intn(countAdjectives)]
 		noun = nouns[rand.Intn(countNoun)]

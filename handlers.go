@@ -27,7 +27,8 @@ const (
 var (
 	atMentionRE    = regexp.MustCompile(`<@([^>|]+)`)
 	serverCmdRE    = regexp.MustCompile(`^server`)
-	serverConfigRE = regexp.MustCompile(`^server\s+(<https?:\/\/\S+>)`)
+// !!!	serverConfigRE = regexp.MustCompile(`^server\s+(<https?:\/\/\S+>)`)
+	serverConfigRE = regexp.MustCompile(`^server\s+(https?:\/\/\S+)`)
 	helpCmdRE      = regexp.MustCompile(`^help`)
 )
 
@@ -199,6 +200,13 @@ func (s *SlashCommandHandlers) configureServer(w http.ResponseWriter, r *http.Re
 
 	// First check if the default is being requested.
 	configuration := strings.Split(text, " ")
+        if (len(configuration) < 2) {
+		w.WriteHeader(http.StatusOK)
+// should return `app.JitsiConferenceHost`
+		fmt.Fprint(w, "Your team's conferences are hosted on !!!")
+		return
+
+        }
 	if configuration[1] == "default" {
 		err := s.ServerConfigWriter.Remove(teamID)
 		if err != nil {
@@ -209,6 +217,7 @@ func (s *SlashCommandHandlers) configureServer(w http.ResponseWriter, r *http.Re
 			return
 		}
 		w.WriteHeader(http.StatusOK)
+// !!! return `app.JitsiConferenceHost` instead
 		fmt.Fprint(w, "Your team's conferences will now be hosted on https://meet.jit.si")
 		return
 	}
@@ -221,6 +230,7 @@ func (s *SlashCommandHandlers) configureServer(w http.ResponseWriter, r *http.Re
 	}
 
 	host := serverConfigRE.FindAllStringSubmatch(text, -1)[0][1]
+// the next line isn't necessary, as the definition of `serverConfigRE` was fixed above to reflect reality...
 	host = strings.Trim(host, "<>")
 	err := s.ServerConfigWriter.Store(&ServerCfgData{
 		TeamID: teamID,
@@ -235,6 +245,7 @@ func (s *SlashCommandHandlers) configureServer(w http.ResponseWriter, r *http.Re
 	}
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
+// !!! return `app.JitsiConferenceHost` instead
 	fmt.Fprintf(w, "Your team's conferences will now be hosted on %s\nRun `/jitsi server default` if you'd like to continue using https://meet.jit.si", host)
 }
 
