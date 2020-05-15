@@ -41,7 +41,7 @@ type TokenReader interface {
 // data for a team's workspace.
 type ServerConfigWriter interface {
 	Store(*ServerCfgData) error
-	Remove(string) error
+	Remove(string, string) error
 }
 
 func handleRequestValidation(w http.ResponseWriter, r *http.Request, SlackSigningSecret string) bool {
@@ -216,7 +216,7 @@ func (s *SlashCommandHandlers) configureServer(w http.ResponseWriter, r *http.Re
 		return
 	}
 	if configuration[1] == "default" {
-		err := s.ServerConfigWriter.Remove(teamID)
+		err := s.ServerConfigWriter.Remove(teamID, "default")
 		if err != nil {
 			hlog.FromRequest(r).Error().
 				Err(err).
