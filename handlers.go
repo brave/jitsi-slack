@@ -27,7 +27,6 @@ const (
 var (
 	atMentionRE    = regexp.MustCompile(`<@([^>|]+)`)
 	serverCmdRE    = regexp.MustCompile(`^server`)
-// !!!	serverConfigRE = regexp.MustCompile(`^server\s+(<https?:\/\/\S+>)`)
 	serverConfigRE = regexp.MustCompile(`^server\s+(https?:\/\/\S+)`)
 	helpCmdRE      = regexp.MustCompile(`^help`)
 )
@@ -198,15 +197,24 @@ func (s *SlashCommandHandlers) configureServer(w http.ResponseWriter, r *http.Re
 	teamID := r.PostFormValue("team_id")
 	text := r.PostFormValue("text")
 
+	cfg, err := s.MeetingGenerator.ServerConfigReader.Get(teamID)
+	if err != nil {
+		hlog.FromRequest(r).Error().
+			Err(err).
+			Msg("defaulting server")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	// First check if the default is being requested.
 	configuration := strings.Split(text, " ")
-        if (len(configuration) < 2) {
+	if len(configuration) < 2 {
 		w.WriteHeader(http.StatusOK)
-// should return `app.JitsiConferenceHost`
-		fmt.Fprint(w, "Your team's conferences are hosted on !!!")
+		fmt.Fprintf(w,
+			"Your team's conferences will now be hosted on %s",
+			cfg.Server)
 		return
-
-        }
+	}
 	if configuration[1] == "default" {
 		err := s.ServerConfigWriter.Remove(teamID)
 		if err != nil {
@@ -217,8 +225,9 @@ func (s *SlashCommandHandlers) configureServer(w http.ResponseWriter, r *http.Re
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-// !!! return `app.JitsiConferenceHost` instead
-		fmt.Fprint(w, "Your team's conferences will now be hosted on https://meet.jit.si")
+		fmt.Fprintf(w,
+			"Your team's conferences will now be hosted on %s",
+			cfg.Server)
 		return
 	}
 
@@ -230,9 +239,9 @@ func (s *SlashCommandHandlers) configureServer(w http.ResponseWriter, r *http.Re
 	}
 
 	host := serverConfigRE.FindAllStringSubmatch(text, -1)[0][1]
-// the next line isn't necessary, as the definition of `serverConfigRE` was fixed above to reflect reality...
+	// the next line isn't necessary, as the definition of `serverConfigRE` was fixed above to reflect reality...
 	host = strings.Trim(host, "<>")
-	err := s.ServerConfigWriter.Store(&ServerCfgData{
+	err = s.ServerConfigWriter.Store(&ServerCfgData{
 		TeamID: teamID,
 		Server: host,
 	})
@@ -245,8 +254,9 @@ func (s *SlashCommandHandlers) configureServer(w http.ResponseWriter, r *http.Re
 	}
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-// !!! return `app.JitsiConferenceHost` instead
-	fmt.Fprintf(w, "Your team's conferences will now be hosted on %s\nRun `/jitsi server default` if you'd like to continue using https://meet.jit.si", host)
+	fmt.Fprintf(w,
+		"Your team's conferences will now be hosted on %s",
+		cfg.Server)
 }
 
 func (s *SlashCommandHandlers) dispatchInvites(w http.ResponseWriter, r *http.Request) {
