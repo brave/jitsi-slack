@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/caarlos0/env"
@@ -36,7 +37,8 @@ type appCfg struct {
 	ServerCfgTable string `env:"SERVER_CFG_TABLE,required"`
 	DynamoRegion   string `env:"DYNAMO_REGION,required"`
 	// application configuration
-	HTTPPort string `env:"HTTP_PORT" envDefault:"8080"`
+	HTTPPort      string `env:"HTTP_PORT" envDefault:"8080"`
+	AssumeRoleArn string `env:"AWS_ASSUME"`
 }
 
 var (
@@ -61,7 +63,15 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("cannot start service w/o aws session")
 	}
-	svc := dynamodb.New(sess)
+
+	var svc *dynamodb.DynamoDB
+	if app.AssumeRoleArn != "" {
+		creds := stscreds.NewCredentials(sess, app.AssumeRoleArn)
+		svc = dynamodb.New(sess, &aws.Config{Credentials: creds})
+	} else {
+		svc = dynamodb.New(sess)
+	}
+
 	tokenStore := jitsi.TokenStore{
 		TableName: app.TokenTable,
 		DB:        svc,
