@@ -9,7 +9,7 @@ import (
 const (
 	// KeyTeamIDSrvCfg is the dynamo key for storing the team id.
 	// This key is the primary index.
-	KeyTeamIDSrvCfg = "teamID"
+	KeyTeamIDSrvCfg = "team-id"
 	// KeyServer is the dynamo key for storing the configured server.
 	KeyServer = "server"
 )
