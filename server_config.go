@@ -9,7 +9,7 @@ import (
 const (
 	// KeyTeamIDSrvCfg is the dynamo key for storing the team id.
 	// This key is the primary index.
-	KeyTeamIDSrvCfg = "teamID"
+	KeyTeamIDSrvCfg = "team-id"
 	// KeyServer is the dynamo key for storing the configured server.
 	KeyServer = "server"
 )
@@ -29,7 +29,7 @@ type ServerCfg struct {
 
 // ServerCfgData is the server configuration data that is stored for teams.
 type ServerCfgData struct {
-	TeamID string `json:"teamID"`
+	TeamID string `json:"team-id"`
 	Server string `json:"server"`
 }
 
@@ -69,11 +69,14 @@ func (s *ServerCfgStore) Store(data *ServerCfgData) error {
 
 // Remove will remove the persistent server configuration for a team. That
 // team will use the defaults if no configuration is stored for the team.
-func (s *ServerCfgStore) Remove(teamID string) error {
+func (s *ServerCfgStore) Remove(teamID, server string) error {
 	input := &dynamodb.DeleteItemInput{
 		Key: map[string]*dynamodb.AttributeValue{
 			KeyTeamIDSrvCfg: {
 				S: aws.String(teamID),
+			},
+			KeyServer: {
+				S: aws.String(server),
 			},
 		},
 		TableName: aws.String(s.TableName),

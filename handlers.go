@@ -27,7 +27,7 @@ const (
 var (
 	atMentionRE    = regexp.MustCompile(`<@([^>|]+)`)
 	serverCmdRE    = regexp.MustCompile(`^server`)
-	serverConfigRE = regexp.MustCompile(`^server\s+(<https?:\/\/\S+>)`)
+	serverConfigRE = regexp.MustCompile(`^server\s+(https?:\/\/\S+)`)
 	helpCmdRE      = regexp.MustCompile(`^help`)
 )
 
@@ -41,7 +41,7 @@ type TokenReader interface {
 // data for a team's workspace.
 type ServerConfigWriter interface {
 	Store(*ServerCfgData) error
-	Remove(string) error
+	Remove(string, string) error
 }
 
 func handleRequestValidation(w http.ResponseWriter, r *http.Request, SlackSigningSecret string) bool {
@@ -106,10 +106,6 @@ type EventHandler struct {
 
 // Handle handles event callbacks for the integration.
 func (e *EventHandler) Handle(w http.ResponseWriter, r *http.Request) {
-	if !handleRequestValidation(w, r, e.SlackSigningSecret) {
-		return
-	}
-
 	var rawEvent map[string]interface{}
 	err := json.NewDecoder(r.Body).Decode(&rawEvent)
 	if err != nil {
@@ -201,10 +197,26 @@ func (s *SlashCommandHandlers) configureServer(w http.ResponseWriter, r *http.Re
 	teamID := r.PostFormValue("team_id")
 	text := r.PostFormValue("text")
 
+	cfg, err := s.MeetingGenerator.ServerConfigReader.Get(teamID)
+	if err != nil {
+		hlog.FromRequest(r).Error().
+			Err(err).
+			Msg("defaulting server")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	// First check if the default is being requested.
 	configuration := strings.Split(text, " ")
+	if len(configuration) < 2 {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w,
+			"Your team's conferences will now be hosted on %s",
+			cfg.Server)
+		return
+	}
 	if configuration[1] == "default" {
-		err := s.ServerConfigWriter.Remove(teamID)
+		err := s.ServerConfigWriter.Remove(teamID, "default")
 		if err != nil {
 			hlog.FromRequest(r).Error().
 				Err(err).
@@ -213,7 +225,9 @@ func (s *SlashCommandHandlers) configureServer(w http.ResponseWriter, r *http.Re
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "Your team's conferences will now be hosted on https://meet.jit.si")
+		fmt.Fprintf(w,
+			"Your team's conferences will now be hosted on %s",
+			cfg.Server)
 		return
 	}
 
@@ -225,8 +239,9 @@ func (s *SlashCommandHandlers) configureServer(w http.ResponseWriter, r *http.Re
 	}
 
 	host := serverConfigRE.FindAllStringSubmatch(text, -1)[0][1]
+	// the next line isn't necessary, as the definition of `serverConfigRE` was fixed above to reflect reality...
 	host = strings.Trim(host, "<>")
-	err := s.ServerConfigWriter.Store(&ServerCfgData{
+	err = s.ServerConfigWriter.Store(&ServerCfgData{
 		TeamID: teamID,
 		Server: host,
 	})
@@ -239,7 +254,9 @@ func (s *SlashCommandHandlers) configureServer(w http.ResponseWriter, r *http.Re
 	}
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Your team's conferences will now be hosted on %s\nRun `/jitsi server default` if you'd like to continue using https://meet.jit.si", host)
+	fmt.Fprintf(w,
+		"Your team's conferences will now be hosted on %s",
+		cfg.Server)
 }
 
 func (s *SlashCommandHandlers) dispatchInvites(w http.ResponseWriter, r *http.Request) {
