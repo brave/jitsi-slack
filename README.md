@@ -57,7 +57,6 @@ Features are being worked on that assist with local development that remove the 
 ## Running
 
 * Clone this project and run with `./set-up.sh`
-* Install dependencies and configure the required DynamoDB tables with `./set-up.sh`.
 
 ## Dependency Management
 
