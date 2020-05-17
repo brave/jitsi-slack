@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  jitsi-slack:
+    image: jitsi/slack-integration:v.0.0.1
+    # build: .
+    ports: 
+        - "8080:8080"
+    environment:
+        -  SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
+        -  SLACK_CLIENT_ID=${SLACK_CLIENT_ID}
+        -  SLACK_CLIENT_SECRET=${SLACK_CLIENT_SECRET}
+        -  SLACK_APP_ID=${SLACK_APP_ID}
+        -  SLACK_APP_SHARABLE_URL=${SLACK_APP_SHARABLE_URL}
+        -  TOKEN_TABLE=${TOKEN_TABLE}
+        -  DYNAMO_REGION=${DYNAMO_REGION}
+        -  SERVER_CFG_TABLE=${SERVER_CFG_TABLE}
+        -  JITSI_TOKEN_SIGNING_KEY=${JITSI_TOKEN_SIGNING_KEY}
+        -  JITSI_TOKEN_KID=${JITSI_TOKEN_KID}
+        -  JITSI_TOKEN_ISS=${JITSI_TOKEN_ISS}
+        -  JITSI_TOKEN_AUD=${JITSI_TOKEN_AUD}
+        -  JITSI_CONFERENCE_HOST=${JITSI_CONFERENCE_HOST}
+        -  TOKEN_TABLE_CONFIG=${TOKEN_TABLE_CONFIG}
+        -  SERVER_TABLE_CONFIG=${SERVER_TABLE_CONFIG}

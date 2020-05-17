@@ -15,4 +15,5 @@ vendor
 main
 
 env.sh
+.env
 notes.md

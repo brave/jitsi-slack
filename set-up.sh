@@ -1,24 +1,57 @@
-
 set -e
 
-. env.sh
+. .env
 
-echo "Installing Go 1.11"
-wget -q -O - https://raw.githubusercontent.com/canha/golang-tools-install-script/master/goinstall.sh \
-| bash -s -- --version 1.11
+command_exists () {
+    type "$1" &> /dev/null ;
+}
 
-source /root/.bashrc
+# sudo apt-install -y update 
+# sudo apt-install -y upgrade
+# sudo apt-install -y git jq 
+
+echo "*** 1- Installing Docker & Docker Compose ***"
+if command_exists docker ; then 
+    echo "Docker exists"
+else 
+    echo "Installing Docker"
+    ./install-docker.sh
+fi
 
 
 sleep 5
 
-echo "Setting up DynamoDB table"
+if command_exists docker-compose ; then 
+    echo "Docker-Compose exists"
+else 
+    echo "Installing Docker-Compose"
+    curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+fi
 
-aws dynamodb create-table --cli-input-json file://$TOKEN_TABLE_CONFIG --region $DYNAMO_REGION 
+echo "*** 2- Setting Up DynamoDB tables ***"
 
-aws dynamodb create-table --cli-input-json file://$SERVER_TABLE_CONFIG --region $DYNAMO_REGION
+if aws dynamodb list-tables |  jq .TableNames | grep OAUTH ; then 
+    echo "TOKENTABLE already exists"
+else 
+    aws dynamodb create-table --cli-input-json file://$TOKEN_TABLE_CONFIG --region $DYNAMO_REGION 
+fi
+
+if aws dynamodb list-tables |  jq .TableNames | grep SERVER ; then 
+    echo "SERVER already exists"
+else 
+   aws dynamodb create-table --cli-input-json file://$SERVER_TABLE_CONFIG --region $DYNAMO_REGION
+fi
 
 
-sleep 5
 
-echo "Done"
+echo "*** 3- Buidling Docker Imagae ***"
+
+./build_docker_image.sh
+
+
+echo "*** 4- Running Jitsi-Slack Integration ***"
+
+docker-compose up
+
+
