@@ -6,9 +6,10 @@ command_exists () {
     type "$1" &> /dev/null ;
 }
 
-# sudo apt-install -y update 
-# sudo apt-install -y upgrade
-# sudo apt-install -y git jq 
+echo "*** 0- House Keeping ***"
+sudo apt-get -y update 
+sudo apt-get -y upgrade
+sudo apt-install -y git jq 
 
 echo "*** 1- Installing Docker & Docker Compose ***"
 if command_exists docker ; then 
