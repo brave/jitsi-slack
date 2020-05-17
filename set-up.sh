@@ -44,13 +44,7 @@ else
 fi
 
 
-
-echo "*** 3- Buidling Docker Imagae ***"
-
-./build_docker_image.sh
-
-
-echo "*** 4- Running Jitsi-Slack Integration ***"
+echo "*** 3- Running Jitsi-Slack Integration ***"
 
 docker-compose up
 

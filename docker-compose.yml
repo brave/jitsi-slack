@@ -2,8 +2,7 @@ version: '3'
 
 services:
   jitsi-slack:
-    image: jitsi/slack-integration:v.0.0.1
-    # build: .
+    build: .
     ports: 
         - "8080:8080"
     environment:
