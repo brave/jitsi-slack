@@ -24,12 +24,44 @@ The application leverages DynamoDB to store session tokens and server configurat
 #### Slack
 
 A slack account needs to be created as well as an [app](https://api.slack.com/apps). The app created is intended for development
-purposes. The following functionality must be enabled in the `Add features and functionality` section of the slack app configuration:
+purposes.
 
-* Slash Commands
-* Bots
+1. Go to https://api.slack.com/apps
 
-The slash command setup is `/jitsi` and the bot mention name is `@jitsi_meet`.
+   Click on `Create New App` and enter this information:
+
+        App Name: Brave Together
+        Development Slack Workspace: Brave Software
+
+    Click on `Create App`
+
+2. Click on `Slash Commands`, click on `Create New Command`, and enter this information:
+
+        Command: /together
+        Request URL: http://together.brave.com:.../slash/jitsi
+        Short Description: Start a Brave confab
+
+    Click on `Save`
+
+3. Click on `OAuth & Permissions`, under `Bot Token Scopes` in addition to `commands`, add these by clicking `Add an OAuth Scope`:
+
+    - incoming-webhook
+    - chat:write
+    - im:read
+    - im:write
+    - mpim:read
+    - mpim:write
+
+4. Under 'User Token Scopes`, click on 
+
+    - chat:write
+    - im:write
+    - mpim:write
+
+4. Under 'User Token Scopes`, click on 
+
+5. Scroll up and click on `Install App to Workspace`. Under `Where should "Brave Together" post?` select `Slackbot`
+
 
 ## Configuration
 
