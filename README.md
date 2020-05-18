@@ -78,8 +78,8 @@ JITSI_TOKEN_KID=<key identifier for conference asap jwts>
 JITSI_TOKEN_ISS=<issuer for conference asap jwts>
 JITSI_TOKEN_AUD=<audience for conference asap jwts>
 JITSI_CONFERENCE_HOST=<conference hosting service i.e. https://meet.jit.si
-TOKEN_TABLE_CONFIG=json file that describes the dynamo_db token table
-SERVER_TABLE_CONFIG=json file that describes the dynamo_db server table
+TOKEN_TABLE_CONFIG=<json file that describes the dynamo_db token table>
+SERVER_TABLE_CONFIG=<json file that describes the dynamo_db server table>
 ```
 
 ## Development
