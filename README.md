@@ -61,15 +61,7 @@ purposes.
     - mpim:read
     - mpim:write
 
-4. Under 'User Token Scopes`, click on 
-
-    - chat:write
-    - im:write
-    - mpim:write
-
-4. Under 'User Token Scopes`, click on 
-
-5. Scroll up and click on `Install App to Workspace`. Under `Where should "Brave Together" post?` select `Slackbot`
+4. Scroll up and click on `Install App to Workspace`. Under `Where should "Brave Together" post?` select `Slackbot`
 
 
 ## Configuration
