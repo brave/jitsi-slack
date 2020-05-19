@@ -8,10 +8,10 @@ import (
 
 var (
 	// All of this craziness is so I can use backticks in backtick string.
-	helpText    = "`/jitsi` will provide a conference link in the channel.\n`/jitsi [@user1 @user2 ...]` will send direct messages to user1 and user2 to join a conference.\n`/jitsi server default` will set the server used for conferences to the default.\n`/jitsi server https://foo.com` will set the server used for conferences to https://foo.com. You can use your own jitsi server."
+	helpText    = "`/together` will provide a conference link in the channel."
 	helpMessage = fmt.Sprintf(`{
 		"response_type":"ephemeral",
-		"text":"How to use /jitsi...",
+		"text":"How to use /together...",
 		"attachments":[{
 			"text": "%s"
 		}]
