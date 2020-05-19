@@ -19,14 +19,14 @@ is currently using go version 1.11 along with module support.
 
 #### AWS
 
-The application leverages DynamoDB to store session tokens and server configuration. You would need access to an AWS environment and the CLI
+The application leverages DynamoDB to store session tokens and server configuration. You would need access to an AWS environment and the CLI. 
 
 #### Slack
 
 A slack account needs to be created as well as an [app](https://api.slack.com/apps). The app created is intended for development
 purposes.
 
-1. Go to https://api.slack.com/apps
+1. Go to <https://api.slack.com/apps>
 
    Click on `Create New App` and enter this information:
 
@@ -34,14 +34,23 @@ purposes.
         Development Slack Workspace: Brave Software
 
     Click on `Create App`
+    
+    ![1](assets/1.png)
 
-2. Click on `Slash Commands`, click on `Create New Command`, and enter this information:
+    ![2](assets/2.png)
+
+2. Under `Add features and functionality`  Click on `Slash Commands`, click on `Create New Command`, and enter this information:
 
         Command: /together
         Request URL: http://together.brave.com:.../slash/jitsi
         Short Description: Start a Brave confab
 
     Click on `Save`
+
+![3](assets/3.png)
+
+
+
 
 3. Click on `OAuth & Permissions`, under `Bot Token Scopes` in addition to `commands`, add these by clicking `Add an OAuth Scope`:
 
@@ -66,20 +75,20 @@ purposes.
 ## Configuration
 
 ```bash
-SLACK_SIGNING_SECRET=<signing secret of slack app>
-SLACK_CLIENT_ID=<client id of slack app>
-SLACK_CLIENT_SECRET=<client secret of slack app>
-SLACK_APP_ID=<slack app id>
-SLACK_APP_SHARABLE_URL=<slack app url for sharing install>
-TOKEN_TABLE=<dynamodb table name for storing oauth tokens>
-DYNAMO_REGION=<dynamodb region used>
-JITSI_TOKEN_SIGNING_KEY=<key used to sign conference asap jwts>
-JITSI_TOKEN_KID=<key identifier for conference asap jwts>
-JITSI_TOKEN_ISS=<issuer for conference asap jwts>
-JITSI_TOKEN_AUD=<audience for conference asap jwts>
-JITSI_CONFERENCE_HOST=<conference hosting service i.e. https://meet.jit.si
-TOKEN_TABLE_CONFIG=<json file that describes the dynamo_db token table>
-SERVER_TABLE_CONFIG=<json file that describes the dynamo_db server table>
+    SLACK_SIGNING_SECRET=<signing secret of slack app>
+    SLACK_CLIENT_ID=<client id of slack app>
+    SLACK_CLIENT_SECRET=<client secret of slack app>
+    SLACK_APP_ID=<slack app id>
+    SLACK_APP_SHARABLE_URL=<slack app url for sharing install>
+    TOKEN_TABLE=<dynamodb table name for storing oauth tokens>
+    DYNAMO_REGION=<dynamodb region used>
+    JITSI_TOKEN_SIGNING_KEY=<key used to sign conference asap jwts>
+    JITSI_TOKEN_KID=<key identifier for conference asap jwts>
+    JITSI_TOKEN_ISS=<issuer for conference asap jwts>
+    JITSI_TOKEN_AUD=<audience for conference asap jwts>
+    JITSI_CONFERENCE_HOST=<conference hosting service i.e. https://meet.jit.si
+    TOKEN_TABLE_CONFIG=<json file that describes the dynamo_db token table>
+    SERVER_TABLE_CONFIG=<json file that describes the dynamo_db server table>
 ```
 
 ## Development
@@ -88,7 +97,7 @@ Features are being worked on that assist with local development that remove the 
 
 ## Running
 
-* Clone this project and run with `./set-up.sh`
+Clone this project and run with `./set-up.sh`
 
 ## Dependency Management
 

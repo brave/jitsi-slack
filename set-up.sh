@@ -9,7 +9,8 @@ command_exists () {
 echo "*** 0- House Keeping ***"
 sudo apt-get -y update 
 sudo apt-get -y upgrade
-sudo apt-install -y git jq 
+sudo apt-get install -y git jq  awscli
+
 
 echo "*** 1- Installing Docker & Docker Compose ***"
 if command_exists docker ; then 
@@ -44,6 +45,10 @@ else
    aws dynamodb create-table --cli-input-json file://$SERVER_TABLE_CONFIG --region $DYNAMO_REGION
 fi
 
+
+echo "*** 3- Open Port 8080***"
+
+ufw allow 8080
 
 echo "*** 3- Running Jitsi-Slack Integration ***"
 
