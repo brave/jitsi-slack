@@ -2,7 +2,6 @@ package jitsi
 
 import (
 	"fmt"
-	"strings"
 )
 
 // MeetingTokenGenerator provides an interface for creating video conference
@@ -44,11 +43,7 @@ func (m *MeetingGenerator) New(teamID, teamName string) (Meeting, error) {
 	}
 	mtg.Host = srv.Server
 
-	if srv.TenantScopedURLs {
-		mtg.URL = fmt.Sprintf("%s/%s/%s", srv.Server, strings.ToLower(teamName), mtg.RoomName)
-	} else {
-		mtg.URL = fmt.Sprintf("%s/%s", srv.Server, mtg.RoomName)
-	}
+	mtg.URL = fmt.Sprintf("%s/%s", srv.Server, mtg.RoomName)
 
 	if srv.AuthenticatedURLSupport {
 		mtg.AuthenticatedURL = func(userID, userName, avatarURL string) (string, error) {
